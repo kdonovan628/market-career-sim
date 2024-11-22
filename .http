@@ -1,0 +1,47 @@
+@host = http://localhost:3000
+
+### Register User
+POST {{host}}/auth/register
+Content-Type: application/json
+
+{
+  "username": "testuser1",
+  "password": "password1234"
+}
+
+### Login
+# @name login
+POST {{host}}/auth/login
+Content-Type: application/json
+
+{
+  "username": "testuser1",
+  "password": "password1234"
+}
+
+### Get all products
+GET {{host}}/products
+
+### Get specific product
+GET {{host}}/products/1
+Authorization: Bearer {{token}}
+
+### Get all orders
+@token = {{login.response.body.token}}
+GET {{host}}/orders
+Authorization: Bearer {{token}}
+
+### Create a new order
+POST {{host}}/orders
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "date": "2024-01-01",
+  "note": "This is a test order",
+  "productIds": [1, 2, 3]
+}
+
+### Get specific order
+GET {{host}}/orders/1
+Authorization: Bearer {{token}}

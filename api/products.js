@@ -1,6 +1,9 @@
-const { parse } = require("dotenv");
+const express = require(`express`);
+const router = express.Router();
+const prisma = require(`../prisma`);
+const { authenticate } = require(`./auth`);
 
-app.get(`/products`, async (req, res, next) => {
+router.get(`/`, async (req, res, next) => {
   try {
     const products = await prisma.product.findMany(); 
     res.json(products);
@@ -9,7 +12,7 @@ app.get(`/products`, async (req, res, next) => {
   }
 });
 
-router.get(`/products/:id`, async (req, res, next) => {
+router.get(`/:id`, async (req, res, next) => {
   const { id } = req.params; 
   try {
     const product = await prisma.product.findUnique({
@@ -32,3 +35,5 @@ router.get(`/products/:id`, async (req, res, next) => {
     next (error);
   }
 });
+
+module.exports = router;
