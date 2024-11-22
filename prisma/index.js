@@ -10,12 +10,13 @@ const prisma = new PrismaClient().$extends({
           data: { username, password: hash },
         });
       },
-      async login(usernname, password) {
+      async login(username, password) {
         const user = await prisma.user.findUniqueOrThrow({
           where: { username }, 
         });
         const valid = await bcrypt.compare(password, user.password);
         if (!valid) throw Error(`Invalid password.`);
+        return user;
       },
     },
   },
