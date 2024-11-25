@@ -1,9 +1,11 @@
 const express = require(`express`);
 const router = express.Router();
+module.exports = router;
+
 const prisma = require(`../prisma`);
 const { authenticate } = require("./auth");
 
-router.get('/', authenticate, async (req, res) => {
+router.get("/", authenticate, async (req, res) => {
   try {
     const orders = await prisma.order.findMany({
       where: { customerId: req.user.id },
@@ -15,7 +17,7 @@ router.get('/', authenticate, async (req, res) => {
   }
 });
 
-router.post('/', authenticate, async (req, res) => {
+router.post("/", authenticate, async (req, res) => {
   const { date, note, productIds } = req.body;
 
   try {
@@ -37,12 +39,12 @@ router.post('/', authenticate, async (req, res) => {
   }
 });
 
-router.get('/:id', authenticate, async (req, res) => {
+router.get("/:id", authenticate, async (req, res) => {
   const { id } = req.params;
 
   try {
-    const order = await prisma.order.findUnique({
-      where: { id: parseInt(id) },
+    const order = await prisma.order.findUniqueOrThrow({
+      where: { id: +id },
       include: { items: true },
     });
 
@@ -57,5 +59,3 @@ router.get('/:id', authenticate, async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch order' });
   }
 });
-
-module.exports = router;
