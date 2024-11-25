@@ -7,15 +7,9 @@ app.use(require("morgan")("dev"));
 app.use(express.json());
 
 // Route handlers 
-app.use(`/auth`, require(`./api/auth`).router);
+app.use(require("./api/auth").router);
 app.use(`/orders`, require(`./api/orders`));
 app.use(`/products`, require(`./api/products`));
-
-// Logging middleware
-app.use((req, res, next) => {
-  console.log(`${req.method} ${req.originalUrl}`);
-  next();
-});
 
 // 404 handler
 app.use((req, res, next) => {

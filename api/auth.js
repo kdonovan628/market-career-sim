@@ -12,23 +12,19 @@ const prisma = require("../prisma");
 
 router.use(async (req, res, next) => {
   const authHeader = req.headers.authorization;
-  const token = authHeader?.slice(7);
-  if (!token) return next();
 
-  console.log("Token received:", token);
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return next();
+  }
+
+  const token = authHeader.slice(7);
 
   try {
     const { id } = jwt.verify(token, JWT_SECRET);
-    console.log("Decoded user ID:", id);
-    const user = await prisma.user.findUniqueOrThrow({
-      where: { id },
-    });
-
-    console.log(user)
-    
-    req.user = user; 
+    const user = await prisma.user.findUniqueOrThrow({ where: { id } });
+    req.user = user;
     next();
-  } catch(error) {
+  } catch (error) {
     next(error);
   }
 });
@@ -38,9 +34,9 @@ router.post("/register", async (req, res, next) => {
   try {
     const user = await prisma.user.register(username, password);
     const token = createToken(user.id);
-    res.status(201).json({ token })
-  } catch (error) {
-    next(error);
+    res.status(201).json({ token });
+  } catch (e) {
+    next(e);
   }
 });
 
@@ -49,17 +45,17 @@ router.post("/login", async (req, res, next) => {
   try {
     const user = await prisma.user.login(username, password);
     const token = createToken(user.id);
-    res.json({ token })
-  } catch(error) {
+    res.json({ token });
+  } catch (error) {
     next(error);
   }
 });
 
-function authenticate(req, res, next) { 
+function authenticate(req, res, next) {
   if (req.user) {
     next();
   } else {
-    next ({ status: 401, message: " You must be logged in."});
+    next({ status: 401, message: "You must be logged in." });
   }
 }
 
